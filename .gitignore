@@ -9,6 +9,9 @@ frontend/build/
 *.pyc
 __pycache__/
 
+# Data JSON files
+backend/data/**/*.json
+
 # Environment files
 .env
 

@@ -8,6 +8,7 @@ const TeamVsTeam = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [format, setFormat] = useState('');
 
   const mockAllPlayers = [
     'Virat Kohli', 'Rohit Sharma', 'Jasprit Bumrah', 'Sachin Tendulkar', 'Shane Warne', 'Wasim Akram', 'Chris Gayle',
@@ -35,8 +36,8 @@ const TeamVsTeam = () => {
   };
 
   const handleSimulateMatch = async () => {
-    if (teams.team1.length !== 11 || teams.team2.length !== 11) {
-      setResult({ message: "Both teams must have exactly 11 players." });
+    if (teams.team1.length !== 11 || teams.team2.length !== 11 || !format) {
+      setResult({ message: "Both teams must have exactly 11 players and a format must be selected." });
       return;
     }
 
@@ -47,7 +48,7 @@ const TeamVsTeam = () => {
       const response = await fetch('http://localhost:5000/api/simulate/team-vs-team', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ team1: teams.team1, team2: teams.team2 }),
+        body: JSON.stringify({ team1: teams.team1, team2: teams.team2, format }),
       });
 
       const data = await response.json();
@@ -77,7 +78,7 @@ const TeamVsTeam = () => {
     return 'bg-red-600';
   };
 
-  const isSimulateDisabled = teams.team1.length !== 11 || teams.team2.length !== 11 || loading;
+  const isSimulateDisabled = teams.team1.length !== 11 || teams.team2.length !== 11 || !format || loading;
 
   return (
     <section className="bg-gray-700 rounded-2xl p-6 shadow-lg">
@@ -168,13 +169,29 @@ const TeamVsTeam = () => {
           </div>
         </div>
       </div>
-      <button
-        onClick={handleSimulateMatch}
-        disabled={isSimulateDisabled}
-        className="w-full mt-8 bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl transition duration-300 ease-in-out transform hover:scale-105 shadow-xl disabled:bg-gray-500 disabled:cursor-not-allowed"
-      >
-        {loading ? 'Simulating...' : 'Simulate Match'}
-      </button>
+      <div className="w-full mt-8 flex flex-col gap-4">
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1 text-gray-300" htmlFor="format">Select Match Format</label>
+          <select
+            id="format"
+            value={format}
+            onChange={(e) => setFormat(e.target.value)}
+            className="bg-gray-600 text-gray-200 border-none rounded-lg p-2 focus:ring focus:ring-blue-500 focus:outline-none"
+          >
+            <option value="">Select Format</option>
+            <option value="t20">T20</option>
+            <option value="odi">ODI</option>
+            <option value="test">Test</option>
+          </select>
+        </div>
+        <button
+          onClick={handleSimulateMatch}
+          disabled={isSimulateDisabled}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl transition duration-300 ease-in-out transform hover:scale-105 shadow-xl disabled:bg-gray-500 disabled:cursor-not-allowed"
+        >
+          {loading ? 'Simulating...' : 'Simulate Match'}
+        </button>
+      </div>
       {result && (
         <div className="bg-gray-800 rounded-lg p-4 mt-8">
           <h3 className="text-xl font-semibold text-gray-200 mb-2">Match Prediction</h3>
