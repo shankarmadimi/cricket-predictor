@@ -12,6 +12,9 @@ __pycache__/
 # Data JSON files
 backend/data/**/*.json
 
+# Data CSV files
+backend/data/*.csv
+
 # Environment files
 .env
 
